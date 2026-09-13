@@ -45,6 +45,89 @@ pub struct TrendingRepositoryQuery {
     pub limit: usize,
 }
 
+/// Query for developers with publicly verifiable, merged fixes for difficult bugs.
+///
+/// Only `language` is required. The default scans active repositories from the
+/// last 180 days and considers recognized High and Critical bug labels.
+#[derive(Debug, Clone)]
+pub struct DeveloperImpactQuery {
+    pub language: String,
+    pub min_repository_stars: u64,
+    pub pushed_after: Option<String>,
+    pub active_within_days: u64,
+    pub priority_at_least: Priority,
+    pub repositories_to_scan: usize,
+    pub limit: usize,
+}
+
+impl DeveloperImpactQuery {
+    pub fn new(language: impl Into<String>) -> Self {
+        Self {
+            language: language.into(),
+            min_repository_stars: 0,
+            pushed_after: None,
+            active_within_days: 180,
+            priority_at_least: Priority::High,
+            repositories_to_scan: 25,
+            limit: 20,
+        }
+    }
+
+    pub fn min_repository_stars(mut self, stars: u64) -> Self {
+        self.min_repository_stars = stars;
+        self
+    }
+    /// Overrides the default rolling activity window with a GitHub search date.
+    pub fn pushed_after(mut self, date: impl Into<String>) -> Self {
+        self.pushed_after = Some(date.into());
+        self
+    }
+    pub fn active_within_days(mut self, days: u64) -> Self {
+        self.active_within_days = days;
+        self
+    }
+    pub fn priority_at_least(mut self, priority: Priority) -> Self {
+        self.priority_at_least = priority;
+        self
+    }
+    pub fn repositories_to_scan(mut self, value: usize) -> Self {
+        self.repositories_to_scan = value;
+        self
+    }
+    pub fn limit(mut self, value: usize) -> Self {
+        self.limit = value;
+        self
+    }
+}
+
+/// A single merged pull request that the crate has verified as a bug-fix candidate.
+#[derive(Debug, Clone, PartialEq)]
+pub struct VerifiedBugFix {
+    pub repository: Repository,
+    pub issue_number: u64,
+    pub issue_title: String,
+    pub issue_url: String,
+    pub issue_labels: Vec<String>,
+    pub priority: PriorityAssessment,
+    pub pull_request_number: u64,
+    pub pull_request_url: String,
+    pub merged_at: String,
+    pub score_contribution: f64,
+    pub evidence: Vec<String>,
+}
+
+/// An evidence-backed developer leaderboard entry.
+#[derive(Debug, Clone, PartialEq)]
+pub struct DeveloperImpact {
+    pub login: String,
+    pub profile_url: String,
+    pub impact_score: f64,
+    pub critical_bugs_fixed: u32,
+    pub high_priority_bugs_fixed: u32,
+    pub repositories_contributed_to: u32,
+    pub fixes: Vec<VerifiedBugFix>,
+}
+
 impl TrendingRepositoryQuery {
     pub fn new(language: impl Into<String>) -> Self {
         Self {

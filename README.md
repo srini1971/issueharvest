@@ -32,6 +32,30 @@ let issues = finder.search(
 Priority is derived from explicit labels such as `P0`, `blocker`, `priority: high`,
 and `P2`. Each result retains its original labels and the classification reasons.
 
+## Developer impact discovery
+
+Find developers with evidence-backed merged fixes for difficult bugs. Only the
+language is required; the query defaults to repositories active within the last
+180 days and recognized High/Critical bug labels.
+
+```rust,no_run
+# async fn run() -> Result<(), Box<dyn std::error::Error>> {
+use issueharvest::{DeveloperImpactQuery, Finder};
+
+let developers = Finder::from_env()?
+    .developer_impact(DeveloperImpactQuery::new("Kotlin"))
+    .await?;
+
+for developer in developers {
+    println!("{}: {:.1}", developer.login, developer.impact_score);
+}
+# Ok(()) }
+```
+
+This is an impact ranking, not a claim of objective developer skill. Each score
+is backed by a closed bug issue, an explicitly referenced merged pull request,
+and the pull request author.
+
 ## Current scope
 
 - Discovers public repositories by language, stars, recent activity, and archive status.

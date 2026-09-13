@@ -34,6 +34,7 @@ impl From<GithubRepository> for Repository {
 #[derive(Debug, Deserialize)]
 pub(crate) struct GithubOwner {
     pub login: String,
+    pub html_url: String,
 }
 
 #[derive(Debug, Deserialize)]
@@ -53,4 +54,31 @@ pub(crate) struct GithubIssue {
 #[derive(Debug, Deserialize)]
 pub(crate) struct GithubLabel {
     pub name: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct TimelineEvent {
+    pub event: String,
+    pub source: Option<TimelineSource>,
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct TimelineSource {
+    pub issue: TimelineIssue,
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct TimelineIssue {
+    pub number: u64,
+    pub pull_request: Option<serde::de::IgnoredAny>,
+}
+
+#[derive(Debug, Deserialize)]
+pub(crate) struct GithubPullRequest {
+    pub number: u64,
+    pub html_url: String,
+    pub title: String,
+    pub body: Option<String>,
+    pub merged_at: Option<String>,
+    pub user: GithubOwner,
 }

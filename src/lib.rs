@@ -11,6 +11,6 @@ mod types;
 pub use finder::{Finder, FinderBuilder};
 pub use priority::{Confidence, Priority, PriorityAssessment};
 pub use types::{
-    IssueMatch, IssueQuery, Repository, SearchError, TrendOrder, TrendingRepository,
-    TrendingRepositoryQuery,
+    DeveloperImpact, DeveloperImpactQuery, IssueMatch, IssueQuery, Repository, SearchError,
+    TrendOrder, TrendingRepository, TrendingRepositoryQuery, VerifiedBugFix,
 };
